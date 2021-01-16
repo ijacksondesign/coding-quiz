@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coding Quiz</title>
+    <link rel="stylesheet" href="https://use.typekit.net/esb0exf.css">
     <link rel="stylesheet" href="./assets/css/styles.css">
 </head>
 <body>
@@ -16,15 +17,20 @@
         </div>
     </header>
 
-    <main>
-        <div>
+    <main id="quiz-content">
+        <div class="quiz-instructions" id="quiz-instructions">
             <h1>So You Think You Know JavaScript?</h1>
             <h2>JavaScript Coding Quiz Challenge</h2>
             <p> Try to answer the following code-related questions within the time limit.
+                <br />
                 Keep in mind that incorrect answers will penalize your score/time by <strong>10 seconds</strong>!
             </p>
-            <button>Start Quiz</button>
+            <button class="btn" id="start-quiz">Start Quiz</button>
         </div>
+        <!-- <div class="quiz-wrapper">
+            <h2 class="quiz-question"></h2>
+            <ul class="quiz-answers"></ul>
+        </div> -->
     </main>
     <script type="text/javascript" src="./assets/js/javascript.js"></script>
 </body>
