@@ -1,15 +1,11 @@
+var instructionContentEl = document.querySelector("#quiz-instructions");
 var quizContentEl = document.querySelector("#quiz-content");
-
 var startQuizEl = document.querySelector("#start-quiz");
-
 var timerEl = document.querySelector(".timer");
 
 var timeLeft = 75;
-
 var highScore = 0;
-
 var currentScore = 0;
-
 var currentQuestion = 0;
 
 var questionsArray = [
@@ -67,10 +63,10 @@ var quizStartHandler = function() {
 
     countdown();
     // function to cycle questions
-    quizDisplayQuestions();
+    quizDisplayQuestions(currentQuestion);
 };
 
-var quizDisplayQuestions = function() {
+var quizDisplayQuestions = function(currentQuestion) {
     // creates a div to display quiz question and answers
     var quizQuestionDiv = document.createElement("div");
     quizQuestionDiv.className = "quiz-question-wrapper";
@@ -84,7 +80,7 @@ var quizDisplayQuestions = function() {
     currentQuestion++;
 };
 
-var quizDisplayChoices = function(currentQuestion) {
+var quizDisplayChoices = function() {
     // creates a div to display multiple choice
     var quizChoicesDiv = document.createElement("div");
     quizChoicesDiv.className = "quiz-choices-wrapper";
@@ -107,20 +103,26 @@ var quizDisplayChoices = function(currentQuestion) {
     return quizChoicesDiv;
 };
 
+var validateAnswer = function(event) {
+    // target buttons
+    var targetEl = event.target;
 
-var validateAnswer = function() {
-    // grabs the answer that user selects
-    var userAnswer = document.querySelector(".quiz-answers").value;
-    console.log(userAnswer);
-
-    if (userAnswer === "right-answer") {
+    // check value of button
+    if (targetEl.value === "true") {
         console.log("correct!");
+        currentScore+=10;
+        quizDisplayQuestions(currentQuestion);
     }
+    // wrong answer was clicked
     else {
         console.log("wrong!");
+        timeLeft-=10;
+        quizDisplayQuestions(currentQuestion);
     }
 };
 
-startQuizEl.addEventListener("click", quizStartHandler);
+// starts quiz
+instructionContentEl.addEventListener("click", quizStartHandler);
 
-// quizContentEl.addEventListener("click", validateAnswer);
+// validate answer
+quizContentEl.addEventListener("click", validateAnswer);
