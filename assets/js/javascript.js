@@ -1,4 +1,4 @@
-var instructionContentEl = document.querySelector("#quiz-instructions");
+var instructionContentEl = document.querySelector("#start-quiz");
 var quizContentEl = document.querySelector("#quiz-content");
 var startQuizEl = document.querySelector("#start-quiz");
 var timerEl = document.querySelector(".timer");
@@ -58,28 +58,36 @@ var countdown = function() {
 
 // function to start quiz
 var quizStartHandler = function() {
+    // selects quiz instructions and removes them once start button is pressed
     var quizInstructions = document.querySelector("#quiz-instructions");
     quizInstructions.remove();
 
+    // start time countdown
     countdown();
-    // function to cycle questions
+
+    // calls function to display questions
     quizDisplayQuestions(currentQuestion);
 };
 
+// function display questions
 var quizDisplayQuestions = function(currentQuestion) {
-    // creates a div to display quiz question and answers
-    var quizQuestionDiv = document.createElement("div");
-    quizQuestionDiv.className = "quiz-question-wrapper";
-    quizQuestionDiv.innerHTML = "<h2 class='quiz-question'>" + questionsArray[currentQuestion].question + "</h2>";
-    quizContentEl.appendChild(quizQuestionDiv);
+    if (currentQuestion < questionsArray.length) {
+        // creates a div to display quiz question and answers
+        var quizQuestionDiv = document.createElement("div");
+        quizQuestionDiv.className = "quiz-question-wrapper";
+        quizQuestionDiv.innerHTML = "<h2 class='quiz-question'>" + questionsArray[currentQuestion].question + "</h2>";
+        quizContentEl.appendChild(quizQuestionDiv);
 
-    var multiChoice = quizDisplayChoices(currentQuestion);
+        var multiChoice = quizDisplayChoices(currentQuestion);
 
-    quizQuestionDiv.appendChild(multiChoice);
-
-    currentQuestion++;
+        quizQuestionDiv.appendChild(multiChoice);
+    } 
+    else {
+        submitScore();
+    }
 };
 
+// function to generate choices
 var quizDisplayChoices = function() {
     // creates a div to display multiple choice
     var quizChoicesDiv = document.createElement("div");
@@ -103,26 +111,58 @@ var quizDisplayChoices = function() {
     return quizChoicesDiv;
 };
 
+// function to validate user's answer
 var validateAnswer = function(event) {
     // target buttons
     var targetEl = event.target;
 
+    var updateQuestion = document.querySelector(".quiz-question-wrapper");
+
     // check value of button
     if (targetEl.value === "true") {
-        console.log("correct!");
+        alert("correct!");
         currentScore+=10;
-        quizDisplayQuestions(currentQuestion);
     }
     // wrong answer was clicked
-    else {
-        console.log("wrong!");
+    else if (targetEl.value === "false") {
+        alert("wrong!");
         timeLeft-=10;
-        quizDisplayQuestions(currentQuestion);
     }
+    // if button wasn't clicked don't run
+    else {
+        return;
+    }
+
+    // after checking, update question counter
+    currentQuestion++;
+
+    // selects the old question and removes
+    updateQuestion.remove();
+
+    // calls the next question
+    quizDisplayQuestions(currentQuestion);
 };
+
+// function to submit score
+var submitScore = function() {
+    var scoreEl = document.createElement("div");
+    scoreEl.className = "submit-score";
+    scoreEl.innerHTML = "<h2 class='quiz-question'>Congratulations! <br /> You've finished the quiz.</h2> <br /> <p>Your final score is " + currentScore;
+    quizContentEl.appendChild(scoreEl);
+
+    var scoreFormEl = document.createElement("form");
+    scoreFormEl.className = "score-form";
+    scoreFormEl.innerHTML = "<label for='initials'></label> <input type ='text' name='initials' placeholder='Enter Your Initials'></input>";
+    scoreEl.appendChild(scoreFormEl);
+
+    var submitFormEl = document.createElement("button");
+    submitFormEl.className = "submit-btn";
+    submitFormEl.textContent = "Submit Score";
+    scoreFormEl.appendChild(submitFormEl);
+}
 
 // starts quiz
 instructionContentEl.addEventListener("click", quizStartHandler);
 
-// validate answer
+// // validate answer
 quizContentEl.addEventListener("click", validateAnswer);
