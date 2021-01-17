@@ -9,7 +9,6 @@ var currentQuestion = 0;
 
 var currentScore = 0;
 var highScores = [];
-var highScoreCounter = 0;
 
 var questionsArray = [
     {
@@ -178,12 +177,9 @@ var submitScore = function(event) {
         score: currentScore
     }
 
-    userDataObj.id = highScoreCounter;
     highScores.push(userDataObj);
     console.log(highScores);
     saveScores();
-
-    highScoreCounter++;
 
     displayHighScores();
 };
@@ -217,7 +213,7 @@ var displayHighScores = function() {
 
     for (var i = 0; i < highScores.length; i++) {
         var displayScoresEl = document.createElement("div");
-        displayScoresEl.className = "high-scores";
+        displayScoresEl.className = "display-high-scores";
         displayScoresEl.innerHTML = i+1 + ": " +  highScores[i].name + " - " + highScores[i].score;
         highScoreEl.appendChild(displayScoresEl);
     }
@@ -232,9 +228,16 @@ var displayHighScores = function() {
     clearScoresBtn.textContent = "Clear High Scores";
     highScoreEl.appendChild(clearScoresBtn);
 
-    goBackBtn.addEventListener("click", resetQuiz);
+    // goBackBtn.addEventListener("click", resetQuiz);
 
-    clearScoresBtn.addEventListener("click", resetQuiz);
+    clearScoresBtn.addEventListener("click", clearScores);
+};
+
+var clearScores = function() {
+    var displayedScores = document.querySelector(".display-high-scores");
+    displayedScores.remove();
+    localStorage.clear();
+    highScores = [];
 };
 
 // starts quiz

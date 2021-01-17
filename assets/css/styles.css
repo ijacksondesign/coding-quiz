@@ -55,7 +55,7 @@ section {
     align-items: center;
 }
 
-section .quiz-instructions, section .quiz-question-wrapper {
+.quiz-instructions, .quiz-question-wrapper, .high-score-wrapper {
     height: 50%;
     width: 60%;
 }
