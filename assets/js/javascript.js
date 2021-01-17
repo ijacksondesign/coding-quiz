@@ -4,9 +4,12 @@ var startQuizEl = document.querySelector("#start-quiz");
 var timerEl = document.querySelector(".timer");
 
 var timeLeft = 75;
-var highScore = 0;
-var currentScore = 0;
+
 var currentQuestion = 0;
+
+var currentScore = 0;
+var highScores = [];
+var highScoreCounter = 0;
 
 var questionsArray = [
     {
@@ -31,7 +34,7 @@ var questionsArray = [
     },
     {
         question: "A very useful tool used during development and debugging for printing content to the debugger is:",
-        choices: ["A: Terminal/Bash", "B: Console.log", "C: JavaScript", "For Loops"],
+        choices: ["A: Terminal/Bash", "B: Console.log", "C: JavaScript", "D: For Loops"],
         answer: "B: Console.log"
     }    
 ];
@@ -83,7 +86,7 @@ var quizDisplayQuestions = function(currentQuestion) {
         quizQuestionDiv.appendChild(multiChoice);
     } 
     else {
-        submitScore();
+        createScoreForm();
     }
 };
 
@@ -95,7 +98,7 @@ var quizDisplayChoices = function() {
 
     for(var i = 0; i < 4; i++) {
         var quizAnswerEl = document.createElement("button");
-        quizAnswerEl.className = "quiz-answers";
+        quizAnswerEl.className = "quiz-answers btn";
         quizAnswerEl.textContent = questionsArray[currentQuestion].choices[i];
         
         if (quizAnswerEl.textContent === questionsArray[currentQuestion].answer) {
@@ -135,6 +138,7 @@ var validateAnswer = function(event) {
 
     // after checking, update question counter
     currentQuestion++;
+    console.log(currentQuestion);
 
     // selects the old question and removes
     updateQuestion.remove();
@@ -143,8 +147,8 @@ var validateAnswer = function(event) {
     quizDisplayQuestions(currentQuestion);
 };
 
-// function to submit score
-var submitScore = function() {
+// function to create score input
+var createScoreForm = function() {
     var scoreEl = document.createElement("div");
     scoreEl.className = "submit-score";
     scoreEl.innerHTML = "<h2 class='quiz-question'>Congratulations! <br /> You've finished the quiz.</h2> <br /> <p>Your final score is " + currentScore;
@@ -152,17 +156,91 @@ var submitScore = function() {
 
     var scoreFormEl = document.createElement("form");
     scoreFormEl.className = "score-form";
-    scoreFormEl.innerHTML = "<label for='initials'></label> <input type ='text' name='initials' placeholder='Enter Your Initials'></input>";
+    scoreFormEl.innerHTML = "<label for='initials'>Enter Your Initials</label> <input type ='text' name='initials' placeholder='Enter Your Initials'></input>";
     scoreEl.appendChild(scoreFormEl);
 
     var submitFormEl = document.createElement("button");
-    submitFormEl.className = "submit-btn";
+    submitFormEl.className = "form-submit btn";
     submitFormEl.textContent = "Submit Score";
     scoreFormEl.appendChild(submitFormEl);
-}
+
+    submitFormEl.addEventListener("click", submitScore);
+};
+
+// function to submit and store score
+var submitScore = function(event) {
+    event.preventDefault();
+
+    var userInitials = document.querySelector("input[name='initials']").value;
+
+    var userDataObj = {
+        name: userInitials,
+        score: currentScore
+    }
+
+    userDataObj.id = highScoreCounter;
+    highScores.push(userDataObj);
+    console.log(highScores);
+    saveScores();
+
+    highScoreCounter++;
+
+    displayHighScores();
+};
+
+// save high score to local storage
+var saveScores = function () {
+    localStorage.setItem("scores", JSON.stringify(highScores));
+};
+
+// load high scores from local storage
+var loadScores = function() {
+    var savedScores = localStorage.getItem("scores");
+
+    if (!savedScores) {
+        return false;
+    }
+
+    savedScores = JSON.parse(savedScores);
+    console.log(savedScores);
+};
+
+// display high scores
+var displayHighScores = function() {
+    var scoreFormEl = document.querySelector(".submit-score");
+    scoreFormEl.remove();
+
+    var highScoreEl = document.createElement("div");
+    highScoreEl.className = "high-score-wrapper";
+    highScoreEl.innerHTML = "<h2 class>High Scores";
+    quizContentEl.appendChild(highScoreEl);
+
+    for (var i = 0; i < highScores.length; i++) {
+        var displayScoresEl = document.createElement("div");
+        displayScoresEl.className = "high-scores";
+        displayScoresEl.innerHTML = i+1 + ": " +  highScores[i].name + " - " + highScores[i].score;
+        highScoreEl.appendChild(displayScoresEl);
+    }
+
+    var goBackBtn = document.createElement("button");
+    goBackBtn.className = "go-back-btn btn";
+    goBackBtn.textContent = "Go Back";
+    highScoreEl.appendChild(goBackBtn);
+    
+    var clearScoresBtn = document.createElement("button");
+    clearScoresBtn.className = "clear-score-btn btn";
+    clearScoresBtn.textContent = "Clear High Scores";
+    highScoreEl.appendChild(clearScoresBtn);
+
+    goBackBtn.addEventListener("click", resetQuiz);
+
+    clearScoresBtn.addEventListener("click", resetQuiz);
+};
 
 // starts quiz
 instructionContentEl.addEventListener("click", quizStartHandler);
 
 // // validate answer
 quizContentEl.addEventListener("click", validateAnswer);
+
+loadScores();
