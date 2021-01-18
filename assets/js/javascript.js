@@ -3,7 +3,7 @@ var quizContentEl = document.querySelector("#quiz-content");
 var timerEl = document.querySelector(".timer");
 var viewHighScoresEl = document.querySelector("#view-high-scores");
 
-var timeLeft = 75;
+var timeLeft = 60;
 
 var currentQuestion = 0;
 
@@ -52,11 +52,15 @@ var countdown = function() {
         }
         else if (timeLeft > 1 && currentQuestion === questionsArray.length) {
             clearInterval(timeInterval);
+            createScoreForm();
         }
         else {
             timerEl.textContent = "";
             clearInterval(timeInterval);
             alert("Oops you ran out of time. Game over!");
+            var sectionSelector = document.querySelector("section");
+            sectionSelector.remove();
+            createScoreForm();
         }
     }, 1000);
 };
