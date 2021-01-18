@@ -39,7 +39,7 @@ var questionsArray = [
 ];
 
 
-// timmer function
+// timer function
 var countdown = function() {
     var timeInterval = setInterval(function() {
         if (timeLeft > 1 && currentQuestion < questionsArray.length) {
