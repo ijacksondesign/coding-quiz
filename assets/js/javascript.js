@@ -1,7 +1,7 @@
-var instructionContentEl = document.querySelector("#start-quiz");
-var quizContentEl = document.querySelector("#quiz-content");
 var startQuizEl = document.querySelector("#start-quiz");
+var quizContentEl = document.querySelector("#quiz-content");
 var timerEl = document.querySelector(".timer");
+var viewHighScoresEl = document.querySelector("#view-high-scores");
 
 var timeLeft = 75;
 
@@ -42,14 +42,17 @@ var questionsArray = [
 // timmer function
 var countdown = function() {
     var timeInterval = setInterval(function() {
-        if (timeLeft > 1) {
+        if (timeLeft > 1 && currentQuestion < questionsArray.length) {
             timerEl.textContent = "Timer: " + timeLeft + " seconds";
             timeLeft--;
         }
         else if (timeLeft === 0) {
             timerEl.textContent = "Timer: " + timeLeft + " seconds";
             timeLeft--;
-          }
+        }
+        else if (timeLeft > 1 && currentQuestion === questionsArray.length) {
+            clearInterval(timeInterval);
+        }
         else {
             timerEl.textContent = "";
             clearInterval(timeInterval);
@@ -74,11 +77,16 @@ var quizStartHandler = function() {
 // function display questions
 var quizDisplayQuestions = function(currentQuestion) {
     if (currentQuestion < questionsArray.length) {
+        var quizSectionEl = document.createElement("section");
+        quizSectionEl.id = "quiz-questions"
+        quizContentEl.appendChild(quizSectionEl);
+        
+
         // creates a div to display quiz question and answers
         var quizQuestionDiv = document.createElement("div");
         quizQuestionDiv.className = "quiz-question-wrapper";
         quizQuestionDiv.innerHTML = "<h2 class='quiz-question'>" + questionsArray[currentQuestion].question + "</h2>";
-        quizContentEl.appendChild(quizQuestionDiv);
+        quizSectionEl.appendChild(quizQuestionDiv);
 
         var multiChoice = quizDisplayChoices(currentQuestion);
 
@@ -118,7 +126,7 @@ var validateAnswer = function(event) {
     // target buttons
     var targetEl = event.target;
 
-    var updateQuestion = document.querySelector(".quiz-question-wrapper");
+    var updateQuestion = document.querySelector("#quiz-questions");
 
     // check value of button
     if (targetEl.value === "true") {
@@ -137,7 +145,6 @@ var validateAnswer = function(event) {
 
     // after checking, update question counter
     currentQuestion++;
-    console.log(currentQuestion);
 
     // selects the old question and removes
     updateQuestion.remove();
@@ -148,7 +155,7 @@ var validateAnswer = function(event) {
 
 // function to create score input
 var createScoreForm = function() {
-    var scoreEl = document.createElement("div");
+    var scoreEl = document.createElement("section");
     scoreEl.className = "submit-score";
     scoreEl.innerHTML = "<h2 class='quiz-question'>Congratulations! <br /> You've finished the quiz.</h2> <br /> <p>Your final score is " + currentScore;
     quizContentEl.appendChild(scoreEl);
@@ -203,32 +210,41 @@ var loadScores = function() {
 
 // display high scores
 var displayHighScores = function() {
-    var scoreFormEl = document.querySelector(".submit-score");
-    scoreFormEl.remove();
+    // selects quiz instructions and removes them once start button is pressed
+    var scoreEl = document.querySelector("section");
+    scoreEl.remove();
 
-    var highScoreEl = document.createElement("div");
-    highScoreEl.className = "high-score-wrapper";
+    var highScoreEl = document.createElement("section");
+    highScoreEl.className = "high-scores-display"
     highScoreEl.innerHTML = "<h2 class>High Scores";
     quizContentEl.appendChild(highScoreEl);
+
+    var highScoreWrapper = document.createElement("div");
+    highScoreWrapper.className = "high-score-wrapper";
+    highScoreEl.appendChild(highScoreWrapper);
 
     for (var i = 0; i < highScores.length; i++) {
         var displayScoresEl = document.createElement("div");
         displayScoresEl.className = "display-high-scores";
         displayScoresEl.innerHTML = i+1 + ": " +  highScores[i].name + " - " + highScores[i].score;
-        highScoreEl.appendChild(displayScoresEl);
+        highScoreWrapper.appendChild(displayScoresEl);
     }
+
+    var buttonWrapper = document.createElement("div");
+    buttonWrapper.className = "button-wrapper";
+    highScoreEl.appendChild(buttonWrapper);
 
     var goBackBtn = document.createElement("button");
     goBackBtn.className = "go-back-btn btn";
     goBackBtn.textContent = "Go Back";
-    highScoreEl.appendChild(goBackBtn);
+    buttonWrapper.appendChild(goBackBtn);
     
     var clearScoresBtn = document.createElement("button");
     clearScoresBtn.className = "clear-score-btn btn";
     clearScoresBtn.textContent = "Clear High Scores";
-    highScoreEl.appendChild(clearScoresBtn);
+    buttonWrapper.appendChild(clearScoresBtn);
 
-    // goBackBtn.addEventListener("click", resetQuiz);
+    goBackBtn.addEventListener("click", resetQuiz);
 
     clearScoresBtn.addEventListener("click", clearScores);
 };
@@ -240,8 +256,47 @@ var clearScores = function() {
     highScores = [];
 };
 
+var resetQuiz = function() {
+    var highScoreEl = document.querySelector(".high-scores-display");
+    highScoreEl.remove();
+
+    // recreates quiz instructions
+    var quizInstructionsEl = document.createElement("section");
+    quizInstructionsEl.className = "quiz-instructions"
+    quizContentEl.appendChild(quizInstructionsEl);
+
+    var quizInstructionsContent = document.createElement("div");
+    quizInstructionsContent.className = "quiz-instructions-content";
+    quizInstructionsEl.appendChild(quizInstructionsContent);
+    
+    var quizInstructionsHeader = document.createElement("h1");
+    quizInstructionsHeader.textContent = "So You Think You Know JavaScript?";
+    quizInstructionsContent.appendChild(quizInstructionsHeader);
+
+    var quizInstructionsSubHeader = document.createElement("h2");
+    quizInstructionsSubHeader.textContent = "JavaScript Coding Quiz Challenge";
+    quizInstructionsContent.appendChild(quizInstructionsSubHeader);
+    
+    var quizInstructionsParagraph = document.createElement("p");
+    quizInstructionsParagraph.innerHTML = "Try to answer the following code-related questions within the time limit. <br /> Keep in mind that incorrect answers will penalize your score/time by <strong>10 seconds</strong>!";
+    quizInstructionsContent.appendChild(quizInstructionsParagraph);
+
+    var quizStartBtn = document.createElement("button");
+    quizStartBtn.className = "btn";
+    quizStartBtn.id = "start-quiz";
+    quizStartBtn.textContent = "Start Quiz";
+    quizInstructionsContent.appendChild(quizStartBtn);
+
+    startQuizEl = document.querySelector("#start-quiz");
+
+    startQuizEl.addEventListener("click", quizStartHandler);
+};
+
+// view high scores
+viewHighScoresEl.addEventListener("click", displayHighScores);
+
 // starts quiz
-instructionContentEl.addEventListener("click", quizStartHandler);
+startQuizEl.addEventListener("click", quizStartHandler);
 
 // // validate answer
 quizContentEl.addEventListener("click", validateAnswer);

@@ -10,24 +10,24 @@
 <body>
     <header>
         <div class="high-scores">
-            <a href="">View High Scores</a>
+            <button class="btn high-scores-btn" id="view-high-scores">View High Scores</button>
         </div>
         <div class="timer"></div>
     </header>
 
-    <section id="quiz-instructions">
-        <div>
-            <h1>So You Think You Know JavaScript?</h1>
-            <h2>JavaScript Coding Quiz Challenge</h2>
-            <p> Try to answer the following code-related questions within the time limit.
-                <br />
-                Keep in mind that incorrect answers will penalize your score/time by <strong>10 seconds</strong>!
-            </p>
-            <button class="btn" id="start-quiz">Start Quiz</button>
-        </div>
-    </section>
-    
-    <section id="quiz-content"></section>
+    <main id="quiz-content">
+        <section id="quiz-instructions">
+            <div class="quiz-instructions-content">
+                <h1>So You Think You Know JavaScript?</h1>
+                <h2>JavaScript Coding Quiz Challenge</h2>
+                <p> Try to answer the following code-related questions within the time limit.
+                    <br />
+                    Keep in mind that incorrect answers will penalize your score/time by <strong>10 seconds</strong>!
+                </p>
+                <button class="btn" id="start-quiz">Start Quiz</button>
+            </div>
+        </section>
+    </main>
     <script type="text/javascript" src="./assets/js/javascript.js"></script>
 </body>
 </html>
